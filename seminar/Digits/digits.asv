@@ -1,0 +1,58 @@
+function 
+% primjeri za ucenje
+load azip.mat
+A = azip; %stupci - pojedina znamenka
+load dzip.mat 
+D = dzip; %jedan redan, stupaca kook i A, teacher output
+
+% razdvajanje po znamenkama
+X = cell(10, 1); %array
+for i = 0:9
+    X{i+1} = A(:,find(D == i)); %na item majestu je podmatrica od A, stupci koi reprezentiraju i
+end
+I
+% SVD
+SVDs = cell(10, 3);
+for i = 1:10
+    [SVDs{i,:}] = svd(X{i});
+end
+
+% singularne vrijednosti
+%Sing = zeros(88, 10);
+%for i=1:10
+%Sing(:,i) = diag(SVDs{i,2}(1:88,1:88));
+%end
+
+%rang aproksimacije
+k = 13;
+
+%Aprox = cell(10, 1);
+%for i = 1:10
+%    Aprox{i} = SVDs{i,1}(:,1:k) * SVDs{i,2}(1:k,1:k) * SVDs{i,3}(:,1:k)';
+%end
+
+% potprostori
+Us = cell(10, 1);
+for i=1:10
+    Us{i} = SVDs{i,1}(:,1:k);
+end
+
+% test primjeri
+load testzip.mat
+At = testzip;
+load dtest.mat
+Dt = dtest;
+
+[r, s] = size(At);
+Dist = zeros(10, s);
+
+% projekcije
+for i=1:10
+    Tmp = At - Us{i} * (Us{i}' * At); %iti stupac 
+    Dist(i,:) = diag(Tmp' * Tmp)';
+end
+
+[M, I] = min(Dist);
+sum((I - 1) == Dt) / s
+
+
